@@ -26,7 +26,7 @@
             <HBox spacing="20.0">
                <children>
                   <Label text="Corso :" />
-                  <ComboBox fx:id="comboCorso" prefHeight="31.0" prefWidth="260.0" />
+                  <ComboBox fx:id="comboCorso" prefHeight="31.0" prefWidth="410.0" />
                </children>
             </HBox>
             <Button fx:id="btnCercaIscrittiCorso" mnemonicParsing="false" onAction="#doCercaIscrittiCorso" text="Cerca iscritti corso" />
@@ -34,9 +34,9 @@
                <children>
                   <Label text="Studente :" />
                   <TextField fx:id="txtMatricola" />
-                  <Button fx:id="btnCercaNome" mnemonicParsing="false">
+                  <Button fx:id="btnCercaNome" mnemonicParsing="false" onAction="#doCercaNome">
                      <graphic>
-                        <ImageView fitHeight="19.0" fitWidth="24.0" onDragDetected="#doCercaNome" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="19.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../../../../../../../../../Desktop/Ingegneria%20Gestionale/Tecniche%20di%20programmazione/Laboratorio/thVQB92XW6.jpg" />
                            </image>

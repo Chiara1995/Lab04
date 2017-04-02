@@ -50,27 +50,49 @@ public class SegreteriaStudentiController {
 	private TextField txtCognome;
 
 	public void setModel(Model model) {
-
+		this.model=model;
+		this.comboCorso.getItems().addAll(model.getElencoCorsi());
+		this.comboCorso.getItems().add(new Corso(null,0,null,0));
+        if(this.comboCorso.getItems().size()>0)
+        	this.comboCorso.setValue(this.comboCorso.getItems().get(0));
 	}
 
 	@FXML
 	void doReset(ActionEvent event) {
-
+		this.txtResult.clear();
+		this.txtCognome.clear();
+		this.txtNome.clear();
+		this.txtMatricola.clear();
 	}
 
 	@FXML
 	void doCercaNome(ActionEvent event) {
-
+		int matricola=Integer.parseInt(txtMatricola.getText());
+		Studente stemp=model.getStudente(matricola);
+		if(stemp==null){
+			txtResult.setText("Matricola "+matricola+" non trovata.");
+		}
+		else{
+			txtNome.setText(stemp.getNome());
+			txtCognome.setText(stemp.getCognome());
+		}
 	}
 
 	@FXML
 	void doCercaIscrittiCorso(ActionEvent event) {
-
+		Corso ctemp=this.comboCorso.getValue();
+		if(ctemp.equals(new Corso(null, 0, null, 0))){
+			txtResult.setText("Errore: selezionare un corso.");
+		}
+		else{
+			List<Studente> stemp=model.getStudentiIscritti(ctemp);
+			for(Studente s : stemp)
+				txtResult.appendText(s+"\n");
+		}
 	}
 
 	@FXML
 	void doCercaCorsi(ActionEvent event) {
-
 	}
 
 	@FXML

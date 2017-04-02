@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,10 +30,52 @@ public class CorsoDAO {
 			while (rs.next()) {
 
 				// Crea un nuovo JAVA Bean Corso
+				Corso c=new Corso(rs.getString("codins"), rs.getInt("crediti"), rs.getString("nome"), rs.getInt("pd"));
 				// Aggiungi il nuovo Corso alla lista
+				corsi.add(c);
 			}
-
+			
+			conn.close();
 			return corsi;
+
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException("Errore Db");
+		}
+	}
+	
+	
+	/*
+	 * Dato un codice insegnamento, ottengo il corso
+	 */
+	public void getCorso(Corso corso) {
+		
+		//TODO
+	}
+
+	/*
+	 * Ottengo tutti gli studenti iscritti al Corso
+	 */
+	public void getStudentiIscrittiAlCorso(Corso corso) {
+		
+		final String sql = "SELECT studente.matricola, studente.cognome, studente.nome, studente.CDS "+
+							"FROM studente, iscrizione "+
+							"WHERE studente.matricola=iscrizione.matricola && iscrizione.codins=?";
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, corso.getCodice());
+
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+
+				Studente s=new Studente(rs.getInt("matricola"), rs.getString("cognome"), rs.getString("nome"), rs.getString("CDS"));
+				corso.aggiungiStudente(s);
+			}
+			
+			conn.close();
 
 		} catch (SQLException e) {
 			// e.printStackTrace();
@@ -43,25 +84,11 @@ public class CorsoDAO {
 	}
 
 	/*
-	 * Dato un codice insegnamento, ottengo il corso
-	 */
-	public void getCorso(Corso corso) {
-		// TODO
-	}
-
-	/*
-	 * Ottengo tutti gli studenti iscritti al Corso
-	 */
-	public void getStudentiIscrittiAlCorso(Corso corso) {
-		// TODO
-	}
-
-	/*
 	 * Data una matricola ed il codice insegnamento,
 	 * iscrivi lo studente al corso.
 	 */
-	public boolean inscriviStudenteACorso(Studente studente, Corso corso) {
-		// TODO
+	public boolean iscriviStudenteACorso(Studente studente, Corso corso) {
+		//TODO
 		return false;
 	}
 }
