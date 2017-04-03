@@ -128,5 +128,9 @@ public class Corso {
 	public String toString() {
 		return nome;
 	}
+	
+	public String toString2(){
+		return this.codice+" "+this.crediti+" "+this.nome+" "+this.periodo;
+	}
 
 }

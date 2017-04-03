@@ -24,7 +24,10 @@ public class SegreteriaStudentiController {
 
 	@FXML
 	private Button btnCercaIscrittiCorso;
-
+	
+	@FXML
+	private Button btnCerca;
+	
 	@FXML
 	private Button btnCercaCorsi;
 
@@ -51,30 +54,51 @@ public class SegreteriaStudentiController {
 
 	public void setModel(Model model) {
 		this.model=model;
-		this.comboCorso.getItems().addAll(model.getElencoCorsi());
 		this.comboCorso.getItems().add(new Corso(null,0,null,0));
+		this.comboCorso.getItems().addAll(model.getElencoCorsi());
         if(this.comboCorso.getItems().size()>0)
         	this.comboCorso.setValue(this.comboCorso.getItems().get(0));
 	}
 
 	@FXML
 	void doReset(ActionEvent event) {
+		this.makeGUIVisible(false);
+		this.txtMatricola.setEditable(true);
 		this.txtResult.clear();
 		this.txtCognome.clear();
 		this.txtNome.clear();
 		this.txtMatricola.clear();
+		this.comboCorso.setValue(this.comboCorso.getItems().get(0));
+		return;
 	}
-
+	
+	public void makeGUIVisible(boolean visible){
+		this.btnCercaCorsi.setDisable(visible);
+		this.btnCercaIscrittiCorso.setDisable(visible);
+		this.btnCercaNome.setDisable(visible);
+		this.btnIscrivi.setDisable(visible);
+		this.comboCorso.setDisable(visible);
+	}
+	
 	@FXML
 	void doCercaNome(ActionEvent event) {
+		txtResult.clear();
+		txtNome.clear();
+		txtCognome.clear();
+		if(!txtMatricola.getText().matches("[\\d]+")){
+			txtResult.setText("Errore: inserire matricola nel formato corretto.");
+			return;
+		}
 		int matricola=Integer.parseInt(txtMatricola.getText());
 		Studente stemp=model.getStudente(matricola);
 		if(stemp==null){
-			txtResult.setText("Matricola "+matricola+" non trovata.");
+			txtResult.setText("Studente con matricola "+matricola+" non presente nel database.\n");
+			return;
 		}
 		else{
 			txtNome.setText(stemp.getNome());
 			txtCognome.setText(stemp.getCognome());
+			return;
 		}
 	}
 
@@ -82,23 +106,128 @@ public class SegreteriaStudentiController {
 	void doCercaIscrittiCorso(ActionEvent event) {
 		Corso ctemp=this.comboCorso.getValue();
 		if(ctemp.equals(new Corso(null, 0, null, 0))){
-			txtResult.setText("Errore: selezionare un corso.");
+			txtResult.setText("Errore: nessun corso selezionato.\n");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;
 		}
 		else{
 			List<Studente> stemp=model.getStudentiIscritti(ctemp);
+			if(stemp.size()==0){
+				txtResult.setText("Errore: corso senza iscritti.\n");
+				this.makeGUIVisible(true);
+				this.txtMatricola.setEditable(false);
+				return;
+			}
 			for(Studente s : stemp)
 				txtResult.appendText(s+"\n");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;				
 		}
 	}
 
 	@FXML
 	void doCercaCorsi(ActionEvent event) {
+		if(!txtMatricola.getText().matches("[\\d]+")){
+			txtResult.setText("Errore: inserire matricola nel formato corretto.");
+			return;
+		}
+		int matricola=Integer.parseInt(txtMatricola.getText());
+		Studente stemp=model.getStudente(matricola);
+		if(stemp==null){
+			txtResult.setText("Studente con matricola "+matricola+" non presente nel database.");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;
+		}
+		else{
+			List<Corso> clist=model.getCorsiStudente(stemp);
+			if(clist.size()==0){
+				txtResult.setText("Studente non iscritto ad alcun corso.\n");
+				this.makeGUIVisible(true);
+				this.txtMatricola.setEditable(false);
+				return;
+			}
+			for(Corso c : clist)
+				txtResult.appendText(c.toString2()+"\n");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;
+		}
+		
 	}
 
 	@FXML
 	void doIscrivi(ActionEvent event) {
-
+		Corso ctemp=comboCorso.getValue();
+		if(ctemp.equals(new Corso(null, 0, null, 0))){
+			txtResult.setText("Errore: nessun corso selezionato.");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;
+		}
+		int matricola=Integer.parseInt(txtMatricola.getText());
+		Studente stemp=model.getStudente(matricola);
+		if(stemp==null){
+			txtResult.setText("Matricola "+matricola+" non presente nel database.");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;
+		}
+		if(model.iscrivi(stemp, ctemp)){
+			txtResult.setText("Studente "+stemp.getMatricola()+" iscritto al corso "+ctemp.getCodice()+".");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+		}
+		else{
+			txtResult.setText("Errore: iscrizione non avvenuta (studente già iscritto al corso).");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+		}
 	}
+	
+	@FXML
+	void doIscritto(ActionEvent event) {
+		if(!txtMatricola.getText().matches("[\\d]+")){
+			txtResult.setText("Errore: inserire matricola nel formato corretto.");
+			return;
+		}
+		int matricola=Integer.parseInt(txtMatricola.getText());
+		Studente stemp=model.getStudente(matricola);
+		if(stemp==null){
+			txtResult.setText("Studente con matricola "+matricola+" non presente nel database.\n");
+			return;
+		}
+		Corso ctemp=this.comboCorso.getValue();
+		if(ctemp.equals(new Corso(null, 0, null, 0))){
+			txtResult.setText("Errore: nessun corso selezionato.\n");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;
+		}
+		else{
+			List<Studente> studenti=model.getStudentiIscritti(ctemp);
+			if(studenti.size()==0){
+				txtResult.setText("Errore: corso senza iscritti.\n");
+				this.makeGUIVisible(true);
+				this.txtMatricola.setEditable(false);
+				return;
+			}
+			if(!studenti.contains(stemp)){
+				txtResult.setText("Studente con matricola "+stemp.getMatricola()+" non iscritto al corso "+ctemp.getNome()+" .");
+				this.makeGUIVisible(true);
+				this.txtMatricola.setEditable(false);
+				return;
+			}
+			else{
+				txtResult.setText("Studente con matricola "+stemp.getMatricola()+" iscritto al corso "+ctemp.getNome()+" .");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;
+			}				
+		}
+    }
 
 	@FXML
 	void initialize() {

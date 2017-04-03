@@ -38,5 +38,35 @@ public class StudenteDAO {
 			throw new RuntimeException("Errore Db");
 		}
 	}
+	
+	/*
+	 * Ottengo tutti i corsi a cui è iscritto lo studente
+	 */
+	public void getCorsiStudente(Studente studente) {
+		
+		final String sql = "SELECT corso.codins, corso.crediti, corso.nome, corso.pd "+
+							"FROM corso, iscrizione "+
+							"WHERE corso.codins=iscrizione.codins && iscrizione.matricola=?";
+		
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, studente.getMatricola());
+
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+
+				Corso c=new Corso(rs.getString("codins"), rs.getInt("crediti"), rs.getString("nome"), rs.getInt("pd"));
+				studente.aggiungiCorso(c);
+			}
+			
+			conn.close();
+
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException("Errore Db");
+		}
+	}
 		
 }

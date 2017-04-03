@@ -9,12 +9,29 @@ public class Studente {
 	private String nome;
 	private String cds;
 	
+	private List<Corso> corsiIscrizione;
+	
 	public Studente(int matricola, String cognome, String nome, String cds) {
 		super();
 		this.matricola = matricola;
 		this.cognome = cognome;
 		this.nome = nome;
 		this.cds = cds;
+		corsiIscrizione=new LinkedList<Corso>();
+	}
+
+	/**
+	 * @return the corsiIscrizione
+	 */
+	public List<Corso> getCorsiIscrizione() {
+		return corsiIscrizione;
+	}
+
+	/**
+	 * @param corsiIscrizione the corsiIscrizione to set
+	 */
+	public void aggiungiCorso(Corso c) {
+		corsiIscrizione.add(c);
 	}
 
 	/**
@@ -78,7 +95,7 @@ public class Studente {
 	 */
 	@Override
 	public String toString() {
-		return matricola+" "+cognome+" "+nome+" "+cds;
+		return matricola+" "+nome+" "+cognome+" "+cds;
 	}
 
 	/* (non-Javadoc)

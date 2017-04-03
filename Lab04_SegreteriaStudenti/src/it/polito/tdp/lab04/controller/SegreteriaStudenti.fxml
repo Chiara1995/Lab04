@@ -57,7 +57,7 @@
                   <Button fx:id="btnIscrivi" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#doIscrivi" text="Iscrivi" />
                </children>
             </HBox>
-            <TextArea fx:id="txtResult">
+            <TextArea fx:id="txtResult" editable="false">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -70,6 +70,8 @@
             </TextArea>
             <HBox alignment="CENTER_RIGHT">
                <children>
+                  <Button fx:id="btnCerca" mnemonicParsing="false" onAction="#doIscritto" text="Cerca" />
+                  <Region prefHeight="31.0" prefWidth="637.0" />
                   <Button fx:id="btnReset" mnemonicParsing="false" onAction="#doReset" prefHeight="31.0" prefWidth="87.0" text="Reset" />
                </children>
             </HBox>
