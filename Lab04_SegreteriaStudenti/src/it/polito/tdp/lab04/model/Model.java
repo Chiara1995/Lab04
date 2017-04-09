@@ -21,8 +21,7 @@ public class Model {
 
 	public Studente getStudente(int matricola) {
 		StudenteDAO sdao=new StudenteDAO();
-		Studente stemp=sdao.getStudente(matricola);	
-		return stemp;
+		return sdao.getStudente(matricola);	
 	}
 	
 	public List<Studente> getStudentiIscritti(Corso corso){
@@ -43,6 +42,14 @@ public class Model {
 			return true;
 		else
 			return false;
+	}
+	
+	/*
+	 * Ritorna TRUE se lo studente è iscritto al corso, FALSE altrimenti
+	 */
+	public boolean isStudenteIscrittoACorso(Studente studente, Corso corso) {
+		StudenteDAO stemp=new StudenteDAO();
+		return stemp.isStudenteIscrittoACorso(studente, corso);
 	}
 	
 }

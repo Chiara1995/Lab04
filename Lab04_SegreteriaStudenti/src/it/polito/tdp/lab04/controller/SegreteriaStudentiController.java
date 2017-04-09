@@ -68,7 +68,7 @@ public class SegreteriaStudentiController {
 		this.txtCognome.clear();
 		this.txtNome.clear();
 		this.txtMatricola.clear();
-		this.comboCorso.setValue(this.comboCorso.getItems().get(0));
+		this.comboCorso.getSelectionModel().clearSelection();
 		return;
 	}
 	
@@ -111,20 +111,18 @@ public class SegreteriaStudentiController {
 			this.txtMatricola.setEditable(false);
 			return;
 		}
-		else{
-			List<Studente> stemp=model.getStudentiIscritti(ctemp);
-			if(stemp.size()==0){
-				txtResult.setText("Errore: corso senza iscritti.\n");
-				this.makeGUIVisible(true);
-				this.txtMatricola.setEditable(false);
-				return;
-			}
-			for(Studente s : stemp)
-				txtResult.appendText(s+"\n");
+		List<Studente> stemp=model.getStudentiIscritti(ctemp);
+		if(stemp.size()==0){
+			txtResult.setText("Errore: corso senza iscritti.\n");
 			this.makeGUIVisible(true);
 			this.txtMatricola.setEditable(false);
-			return;				
+			return;
 		}
+		for(Studente s : stemp)
+			txtResult.appendText(s+"\n");
+		this.makeGUIVisible(true);
+		this.txtMatricola.setEditable(false);
+		return;				
 	}
 
 	@FXML
@@ -141,21 +139,19 @@ public class SegreteriaStudentiController {
 			this.txtMatricola.setEditable(false);
 			return;
 		}
-		else{
-			List<Corso> clist=model.getCorsiStudente(stemp);
-			if(clist.size()==0){
-				txtResult.setText("Studente non iscritto ad alcun corso.\n");
-				this.makeGUIVisible(true);
-				this.txtMatricola.setEditable(false);
-				return;
-			}
-			for(Corso c : clist)
-				txtResult.appendText(c.toString2()+"\n");
+		List<Corso> clist=model.getCorsiStudente(stemp);
+		if(clist.size()==0){
+			txtResult.setText("Studente non iscritto ad alcun corso.\n");
 			this.makeGUIVisible(true);
 			this.txtMatricola.setEditable(false);
 			return;
 		}
-		
+		for(Corso c : clist)
+			txtResult.appendText(c.toString2()+"\n");
+		this.makeGUIVisible(true);
+		this.txtMatricola.setEditable(false);
+		return;
+				
 	}
 
 	@FXML
@@ -167,6 +163,10 @@ public class SegreteriaStudentiController {
 			this.txtMatricola.setEditable(false);
 			return;
 		}
+		if(txtMatricola.getText().isEmpty()){
+			txtResult.setText("Errore: inserire una matricola");
+			return;
+		}
 		int matricola=Integer.parseInt(txtMatricola.getText());
 		Studente stemp=model.getStudente(matricola);
 		if(stemp==null){
@@ -175,16 +175,24 @@ public class SegreteriaStudentiController {
 			this.txtMatricola.setEditable(false);
 			return;
 		}
-		if(model.iscrivi(stemp, ctemp)){
+		//Controllo se studente è già iscritto al corso
+		if(model.isStudenteIscrittoACorso(stemp, ctemp)){
+			txtResult.setText("Studente già iscritto al corso");
+			return;
+		}
+		if(!model.iscrivi(stemp, ctemp)){
+			txtResult.setText("Errore: iscrizione non avvenuta.");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;
+		}
+		else{
 			txtResult.setText("Studente "+stemp.getMatricola()+" iscritto al corso "+ctemp.getCodice()+".");
 			this.makeGUIVisible(true);
 			this.txtMatricola.setEditable(false);
+			return;
 		}
-		else{
-			txtResult.setText("Errore: iscrizione non avvenuta (studente già iscritto al corso).");
-			this.makeGUIVisible(true);
-			this.txtMatricola.setEditable(false);
-		}
+		
 	}
 	
 	@FXML
@@ -206,27 +214,26 @@ public class SegreteriaStudentiController {
 			this.txtMatricola.setEditable(false);
 			return;
 		}
-		else{
-			List<Studente> studenti=model.getStudentiIscritti(ctemp);
-			if(studenti.size()==0){
-				txtResult.setText("Errore: corso senza iscritti.\n");
-				this.makeGUIVisible(true);
-				this.txtMatricola.setEditable(false);
-				return;
-			}
-			if(!studenti.contains(stemp)){
-				txtResult.setText("Studente con matricola "+stemp.getMatricola()+" non iscritto al corso "+ctemp.getNome()+" .");
-				this.makeGUIVisible(true);
-				this.txtMatricola.setEditable(false);
-				return;
-			}
-			else{
-				txtResult.setText("Studente con matricola "+stemp.getMatricola()+" iscritto al corso "+ctemp.getNome()+" .");
+		List<Studente> studenti=model.getStudentiIscritti(ctemp);
+		if(studenti.size()==0){
+			txtResult.setText("Errore: corso senza iscritti.\n");
 			this.makeGUIVisible(true);
 			this.txtMatricola.setEditable(false);
 			return;
-			}				
 		}
+		if(!studenti.contains(stemp)){
+			txtResult.setText("Studente con matricola "+stemp.getMatricola()+" non iscritto al corso "+ctemp.getNome()+" .");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;
+		}
+		else{
+			txtResult.setText("Studente con matricola "+stemp.getMatricola()+" iscritto al corso "+ctemp.getNome()+" .");
+			this.makeGUIVisible(true);
+			this.txtMatricola.setEditable(false);
+			return;
+		}				
+		
     }
 
 	@FXML
@@ -241,6 +248,10 @@ public class SegreteriaStudentiController {
 		assert btnIscrivi != null : "fx:id=\"btnIscrivi\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
 		assert txtMatricola != null : "fx:id=\"txtMatricola\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
 		assert btnReset != null : "fx:id=\"btnReset\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+	
+		//Utilizzare questo font per incolonnare correttamente i dati
+		txtResult.setStyle("-fx-font-family: monospace");
+		
 	}
 
 }

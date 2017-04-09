@@ -39,7 +39,7 @@ public class CorsoDAO {
 			return corsi;
 
 		} catch (SQLException e) {
-			// e.printStackTrace();
+			e.printStackTrace();
 			throw new RuntimeException("Errore Db");
 		}
 	}
@@ -50,7 +50,28 @@ public class CorsoDAO {
 	 */
 	public void getCorso(Corso corso) {
 		
-		//TODO
+		final String sql = "SELECT * FROM corso WHERE codins=?";
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, corso.getCodice());
+
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+				corso.setCrediti(rs.getInt("crediti"));
+				corso.setNome(rs.getString("nome"));
+				corso.setPeriodo(rs.getInt("pd"));
+			}
+			
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore Db");
+		}
+
 	}
 
 	/*
@@ -60,7 +81,7 @@ public class CorsoDAO {
 		
 		final String sql = "SELECT studente.matricola, studente.cognome, studente.nome, studente.CDS "+
 							"FROM studente, iscrizione "+
-							"WHERE studente.matricola=iscrizione.matricola && iscrizione.codins=?";
+							"WHERE studente.matricola=iscrizione.matricola AND iscrizione.codins=?";
 
 		try {
 			Connection conn = ConnectDB.getConnection();
@@ -78,7 +99,7 @@ public class CorsoDAO {
 			conn.close();
 
 		} catch (SQLException e) {
-			// e.printStackTrace();
+			e.printStackTrace();
 			throw new RuntimeException("Errore Db");
 		}
 	}
@@ -99,13 +120,13 @@ public class CorsoDAO {
 
 			int rs = st.executeUpdate();
 			conn.close();
+			boolean iscritto=false;
 			if(rs==1) {
-				return true;
+				iscritto=true;
 			}
-			else
-				return false;
+			return iscritto;
 		} catch (SQLException e) {
-			// e.printStackTrace();
+			e.printStackTrace();
 			throw new RuntimeException("Errore Db");
 		}
 	}

@@ -12,7 +12,6 @@ public class Studente {
 	private List<Corso> corsiIscrizione;
 	
 	public Studente(int matricola, String cognome, String nome, String cds) {
-		super();
 		this.matricola = matricola;
 		this.cognome = cognome;
 		this.nome = nome;
